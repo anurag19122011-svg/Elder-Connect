@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Elder Connect — Friendly Chat for Seniors</title>
+<style>
+:root {
+  --bg1: #fff8f1;
+  --bg2: #f0fdf4;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #f97316;
+  --accent-2: #10b981;
+  --text: #111827;
+  --input-bg: #fff7ed;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  background: linear-gradient(160deg, var(--bg1), var(--bg2));
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 17px;
+  overflow-x: hidden;
+}
+
+/* Splash */
+#splash {
+  position: fixed; inset: 0;
+  background: linear-gradient(160deg,var(--accent),var(--accent-2));
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: white; text-align: center; z-index: 1200;
+  animation: fadeIn 1s ease;
+  transition: opacity .8s ease, visibility .8s ease;
+}
+#splash h1 { font-size: 38px; margin-bottom: 12px; animation: slideDown .8s ease; }
+#splash p { margin-bottom: 20px; opacity: 0.95; animation: fadeUp 1s ease; }
+#enterBtn {
+  background: white; color: var(--accent);
+  border: none; padding: 16px 32px; border-radius: 16px;
+  font-size: 20px; font-weight: bold;
+  cursor: pointer;
+  animation: popIn 1s ease;
+}
+#enterBtn:hover { transform: scale(1.05); }
+.confetti { position: fixed; top: -10vh; pointer-events: none; font-size: 22px; z-index: 1300; animation: confFall linear forwards; }
+@keyframes confFall { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+
+/* Leaves */
+#leaves { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.leaf { position: absolute; top: -10%; opacity: 0.8; animation: fall linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0; } }
+
+/* Main container */
+.container { position: relative; z-index: 1; max-width: 1080px; margin: 40px auto; padding: 24px; animation: fadeIn 1s ease; display: none; }
+.header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; animation: slideDown 0.8s ease; }
+
+.logo {
+  width: 90px; height: 90px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+  animation: popIn 1s ease;
+}
+.logo svg { width: 70px; height: 70px; fill: white; }
+
+h1 { margin: 0; font-size: 30px; font-weight: 800; }
+.tag { color: var(--muted); font-size: 16px; }
+
+.grid { display: grid; grid-template-columns: 1fr 360px; gap: 24px; }
+.card { background: var(--card); border-radius: 20px; padding: 22px; box-shadow: 0 8px 24px rgba(12,18,30,0.1); transition: transform 0.25s ease, box-shadow 0.25s ease; animation: fadeUp 0.9s ease; }
+.card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 12px 28px rgba(12,18,30,0.12); }
+
+.small { font-size: 15px; color: var(--muted); }
+.btn { padding: 14px 22px; border-radius: 12px; border: 0; cursor: pointer; font-size: 16px; font-weight: 600; transition: background 0.2s ease, transform 0.15s ease; animation: popIn 0.8s ease; }
+.btn:hover { transform: translateY(-2px) scale(1.02); }
+.btn.orange { background: var(--accent); color: #fff; }
+.btn.orange:hover { background: #ea580c; }
+.btn.green { background: var(--accent-2); color: #fff; }
+.btn.green:hover { background: #059669; }
+
+.ghost { background: transparent; border: 2px solid #d1d5db; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease; animation: popIn 0.9s ease; }
+.ghost:hover { background: #f9fafb; border-color: #9ca3af; transform: translateY(-2px); }
+
+.form-row { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; animation: fadeIn 1s ease; }
+input[type=text], select, textarea { padding: 14px; border-radius: 12px; border: 2px solid #fcd34d; background: var(--input-bg); font-size: 16px; transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(249,115,22,0.25); outline: none; }
+label { font-weight: 600; font-size: 16px; color: var(--accent); }
+
+.profiles { display: flex; flex-direction: column; gap: 14px; margin-top: 12px; }
+.profile { display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 14px; border: 1px solid #e5e7eb; background: #fafafa; transition: background 0.2s ease, transform 0.2s ease; animation: fadeUp 1s ease; }
+.profile:hover { background: #f3f4f6; transform: translateY(-2px); }
+.avatar { width: 60px; height: 60px; border-radius: 14px; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 20px; }
+
+.footer { margin-top: 18px; font-size: 15px; color: var(--muted); }
+.footer a { color: var(--accent); font-weight: 600; }
+.badge { background: #fff7ed; color: var(--accent); padding: 7px 12px; border-radius: 10px; font-weight: 700; font-size: 14px; }
+.hidden { display: none; }
+
+/* Animations */
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes fadeUp { from {opacity:0;transform:translateY(15px);} to {opacity:1;transform:translateY(0);} }
+@keyframes slideDown { from {opacity:0;transform:translateY(-20px);} to {opacity:1;transform:translateY(0);} }
+@keyframes popIn { 0% {opacity:0;transform:scale(0.9);} 100% {opacity:1;transform:scale(1);} }
+
+@media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<!-- Splash -->
+<div id="splash">
+  <h1>🎁 Welcome to Elder Connect ❤️</h1>
+  <p>Find new friends who share your interests</p>
+  <button id="enterBtn">Enter Elder Connect</button>
+</div>
+
+<div id="leaves"></div>
+
+<div class="container" id="mainApp">
+  <div class="header">
+    <div class="logo">
+      <svg viewBox="0 0 64 64">
+        <path d="M32 10c4-6 14-6 18 2 3 6 0 12-4 16l-14 14-14-14c-4-4-7-10-4-16 4-8 14-8 18-2z"/>
+        <path d="M12 34c2-2 6-2 8 0l12 12 12-12c2-2 6-2 8 0 3 3 3 7 0 10L36 58c-2 2-6 2-8 0L12 44c-3-3-3-7 0-10z"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Elder Connect</h1>
+      <div class="tag">A simple, safe place for seniors to find friends by shared interests</div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <!-- Survey -->
+      <div class="card" id="onboardCard">
+        <h2>Welcome — Let's get to know you</h2>
+        <p class="small">Answer 10 quick questions to help us match you with people who share your hobbies and schedule.</p>
+        <form id="surveyForm">
+          <div class="form-row"><label>1. Full name (or nickname)</label><input type="text" id="q_name" required placeholder="e.g. Raj, Meera" /></div>
+          <div class="form-row"><label>2. Age</label><input type="text" id="q_age" required placeholder="e.g. 72" /></div>
+          <div class="form-row"><label>3. Personality (choose up to 2)</label>
+            <select id="q_personality" multiple size="3">
+              <option>Friendly</option><option>Quiet</option><option>Talkative</option><option>Calm</option><option>Curious</option>
+            </select>
+            <div class="small">Hold Ctrl (or Cmd) to select multiple.</div>
+          </div>
+          <div class="form-row"><label>4. Hobbies / Interests (comma-separated)</label><input type="text" id="q_hobbies" placeholder="e.g. gardening, chess, old movies"/></div>
+          <div class="form-row"><label>5. Lifestyle / Mobility</label>
+            <select id="q_lifestyle"><option>Independent at home</option><option>Lives in old-age home</option><option>Requires assistance</option></select>
+          </div>
+          <div class="form-row"><label>6. Languages spoken</label><input type="text" id="q_lang" placeholder="e.g. Hindi, English, Bengali" /></div>
+          <div class="form-row"><label>7. Best time to chat</label>
+            <select id="q_time"><option>Morning (6–10)</option><option>Midday (10–14)</option><option>Afternoon (14–18)</option><option>Evening (18–22)</option></select>
+          </div>
+          <div class="form-row"><label>8. How often would you like to chat?</label>
+            <select id="q_freq"><option>Daily</option><option>Few times a week</option><option>Weekly</option></select>
+          </div>
+          <div class="form-row"><label>9. Short bio — tell others about you</label><textarea id="q_bio" rows="3" placeholder="A little about yourself"></textarea></div>
+          <div class="form-row"><label>10. WhatsApp number (optional)</label><input type="text" id="q_whatsapp" placeholder="+91 98765 43210 (optional)" />
+            <div class="small">We will only use this number if you consent to join a WhatsApp group. You can change it later.</div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap">
+            <label style="margin:0;display:flex;align-items:center;gap:8px"><input type="checkbox" id="consent" /> I consent to share my WhatsApp number to join groups.</label>
+            <button type="submit" class="btn orange">Save & Find Matches</button>
+            <button type="button" id="clearBtn" class="btn green">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Matches -->
+      <div class="card hidden" style="margin-top:16px" id="matchesCard">
+        <h2>Suggested Matches & Groups</h2>
+        <p class="small">Based on your answers, we suggest groups you might like.</p>
+        <div id="matchesList" class="profiles"></div>
+        <div id="noMatches" class="small hidden">No matches found yet. Try expanding your hobbies.</div>
+      </div>
+    </div>
+
+    <!-- Profile -->
+    <div>
+      <div class="card">
+        <h3>Your Profile</h3>
+        <div id="profileView"><div class="kv"><div class="small">Not yet created</div><div class="badge">New</div></div>
+          <div class="small" style="margin-top:8px">Fill the survey to create your profile. Your data stays only on your device unless you consent to share your WhatsApp number.</div>
+        </div>
+        <div style="margin-top:16px">
+          <h4>Privacy & Consent</h4>
+          <p class="small">We clearly ask for consent before using or sharing your WhatsApp number. You can opt out at any time. This demo stores data locally in your browser (no server) so you remain in control.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="downloadBtn" class="btn orange">Download Elder Connect</button>
+            <button id="exportBtn" class="ghost">Export profile (JSON)</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h4>Quick Tips</h4>
+        <ul class="small">
+          <li>Be honest and add hobbies — it helps better matches.</li>
+          <li>Only share WhatsApp if you want to join groups.</li>
+          <li>If you are an organizer, you can create groups for activities.</li>
+        </ul>
+        <div class="footer">Built as a simple demo. To make this live for many users you'd add a secure server and moderation tools.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Grab static elements first
+  const splash = document.getElementById('splash');
+  const enterBtn = document.getElementById('enterBtn');
+  const mainApp = document.getElementById('mainApp');
+
+  // Confetti function (unchanged behavior)
+  function launchConfetti(){
+    const syms=['🎉','🎁','💝','💖','✨'];
+    for(let i=0;i<25;i++){
+      const c=document.createElement('div');
+      c.className='confetti';
+      c.textContent=syms[Math.floor(Math.random()*syms.length)];
+      c.style.left=Math.random()*100+'vw';
+      c.style.fontSize=(18+Math.random()*22)+'px';
+      c.style.animationDuration=(3+Math.random()*2)+'s';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),5000);
+    }
+  }
+
+  // ENTER button: show app + confetti
+  enterBtn.addEventListener('click', () => {
+    splash.style.opacity = '0';
+    splash.style.visibility = 'hidden';
+    setTimeout(()=>splash.remove(), 800);
+    mainApp.style.display = 'block';
+    launchConfetti();
+  });
+
+  // Survey/profile storage elements and inputs
+  const form = document.getElementById('surveyForm');
+  const profileView = document.getElementById('profileView');
+  const matchesCard = document.getElementById('matchesCard');
+  const matchesList = document.getElementById('matchesList');
+  const noMatches = document.getElementById('noMatches');
+  const clearBtn = document.getElementById('clearBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const exportBtn = document.getElementById('exportBtn');
+
+  // Inputs (explicitly selected — avoids relying on browser auto-globals)
+  const q_name = document.getElementById('q_name');
+  const q_age = document.getElementById('q_age');
+  const q_personality = document.getElementById('q_personality');
+  const q_hobbies = document.getElementById('q_hobbies');
+  const q_lifestyle = document.getElementById('q_lifestyle');
+  const q_lang = document.getElementById('q_lang');
+  const q_time = document.getElementById('q_time');
+  const q_freq = document.getElementById('q_freq');
+  const q_bio = document.getElementById('q_bio');
+  const q_whatsapp = document.getElementById('q_whatsapp');
+  const consent = document.getElementById('consent');
+
+  // Storage helpers
+  function saveProfile(p){ localStorage.setItem('elder_connect_profile', JSON.stringify(p)); }
+  function getProfile(){ let p = localStorage.getItem('elder_connect_profile'); return p ? JSON.parse(p) : null; }
+  function escapeHtml(s){ return String(s||'').replace(/[&<>"]|'/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // Render profile in sidebar
+  function renderProfile(){
+    const p = getProfile();
+    if(!p){
+      profileView.innerHTML = '<div class="small">No profile yet</div>';
+      return;
+    }
+    profileView.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><div class="avatar">${escapeHtml((p.name||'')[0]||'U')}</div><div><div style="font-weight:700">${escapeHtml(p.name)}</div><div class="small">${escapeHtml(p.age)} • ${escapeHtml(p.lang)}</div></div></div><div style="margin-top:8px" class="small">${escapeHtml(p.bio||'')}</div>`;
+  }
+
+  // Render matches — add WhatsApp join button per hobby
+  function renderMatches(p){
+    matchesList.innerHTML = '';
+    const hobbies = (p.hobbies||'').split(',').map(h=>h.trim()).filter(Boolean);
+    if(!hobbies.length){ matchesCard.classList.add('hidden'); return; }
+    matchesCard.classList.remove('hidden');
+
+    hobbies.slice(0,3).forEach(h=>{
+      const el = document.createElement('div');
+      el.className = 'profile';
+      el.innerHTML = `
+        <div class="avatar">${escapeHtml((h[0]||'').toUpperCase())}</div>
+        <div style="flex:1">
+          <strong>${escapeHtml(h)} Lovers</strong>
+          <div class="small">${Math.floor(Math.random()*10)+2} members</div>
+          <div style="margin-top:8px"><button type="button" class="btn green joinBtn">Join WhatsApp Group</button></div>
+        </div>
+      `;
+      // attach handler for this button, capturing hobby 'h'
+      const joinBtn = el.querySelector('.joinBtn');
+      joinBtn.addEventListener('click', ()=>{
+        // always fetch latest saved profile (so if user edited, we use current)
+        const profile = getProfile() || {};
+        const name = profile.name || '';
+        const msg = `Hello, I would like to join the "${h}" group. My name: ${name}.`;
+        const url = "https://wa.me/?text=" + encodeURIComponent(msg);
+        window.open(url, '_blank');
+      });
+
+      matchesList.appendChild(el);
+    });
+  }
+
+  // Form submit -> save profile and render
+  form.addEventListener('submit', e=>{
+    e.preventDefault();
+    const p = {
+      name: q_name.value || '',
+      age: q_age.value || '',
+      personality: Array.from(q_personality.selectedOptions||[]).map(o=>o.value),
+      hobbies: q_hobbies.value || '',
+      lifestyle: q_lifestyle.value || '',
+      lang: q_lang.value || '',
+      time: q_time.value || '',
+      freq: q_freq.value || '',
+      bio: q_bio.value || '',
+      whatsapp: q_whatsapp.value || '',
+      consent: !!consent.checked
+    };
+    saveProfile(p);
+    renderProfile();
+    renderMatches(p);
+  });
+
+  // Clear button -> reset form + remove saved profile + hide matches
+  clearBtn.addEventListener('click', ()=>{
+    localStorage.removeItem('elder_connect_profile');
+    form.reset();
+    renderProfile();
+    matchesCard.classList.add('hidden');
+  });
+
+  // Download full HTML page (saves current DOM as HTML file)
+  downloadBtn.addEventListener('click', ()=>{
+    const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+    const blob = new Blob([html], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'elder-connect.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // Export profile JSON (download)
+  exportBtn.addEventListener('click', ()=>{
+    const p = getProfile();
+    if(!p){ alert('No profile to export yet.'); return; }
+    const blob = new Blob([JSON.stringify(p,null,2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'elder-connect-profile.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // Initialize: render saved profile + matches if any
+  renderProfile();
+  const existing = getProfile();
+  if(existing) renderMatches(existing);
+
+  // Leaves animation (unchanged)
+  const leaves = document.getElementById('leaves');
+  const syms = ['🍂','🍁','🌿'];
+  function makeLeaf(){
+    const leaf = document.createElement('div');
+    leaf.className = 'leaf';
+    leaf.textContent = syms[Math.floor(Math.random()*syms.length)];
+    leaf.style.left = Math.random()*100 + 'vw';
+    leaf.style.fontSize = (30+Math.random()*25) + 'px';
+    leaf.style.animationDuration = (5+Math.random()*5) + 's';
+    leaves.appendChild(leaf);
+    setTimeout(()=>leaf.remove(),10000);
+  }
+  setInterval(makeLeaf,500);
+
+})();
+</script>
+</body>
+</html>
