@@ -350,19 +350,6 @@ label { font-weight: 600; font-size: 16px; color: var(--accent); }
     a.click();
     URL.revokeObjectURL(a.href);
   });
-
-  // Export profile JSON (download)
-  exportBtn.addEventListener('click', ()=>{
-    const p = getProfile();
-    if(!p){ alert('No profile to export yet.'); return; }
-    const blob = new Blob([JSON.stringify(p,null,2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'elder-connect-profile.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  });
-
   // Initialize: render saved profile + matches if any
   renderProfile();
   const existing = getProfile();
@@ -387,3 +374,4 @@ label { font-weight: 600; font-size: 16px; color: var(--accent); }
 </script>
 </body>
 </html>
+
